@@ -4,15 +4,24 @@
 
 1. ソースファイルの準備 (ホスト上で)
 
-    * $HOME/vagrant/data/src に xTAPP-rc-150401.tgz をダウンロード
+    * $HOME/vagrant/data/src に xTAPP-develop-160715.tgz をダウンロード
 
-2. パッケージのビルド
+2. ビルドディレクトリの準備
 
         cd $HOME/build
-        sh /development/ma-xtapp/build.sh > build.log 2>&1
+        sh /development/ma-xtapp/setup.sh
 
-3. 生成物を移動
+3. パッケージのビルド
 
-        VERSION=150401
-        mkdir -p /data/xtapp_${VERSION}
-        mv -f xtapp_${VERSION}.orig.tar.gz xtapp_${VERSION}-*.debian.tar.gz xtapp_*.deb /data/xtapp_${VERSION}
+        cd $HOME/build
+        sh /development/ma-xtapp/build.sh 2>&1 | tee build.log
+
+4. パッケージへの署名
+
+        cd $HOME/build
+        debsign xtapp_*.changes 
+
+5. リポジトリへの登録
+
+        cd $HOME/build
+        sh /development/MateriAppsLive/vagrant/add_repo.sh xtapp_*.changes

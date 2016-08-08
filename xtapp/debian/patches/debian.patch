@@ -46,7 +46,7 @@
  #
  # for single-thread
  ##LIBLAPACK = -lmkl_lapack95_lp64 # for composerxe-2011
-@@ -100,36 +100,36 @@
+@@ -100,70 +100,65 @@
  #	-lgdrdgemm-ovl -L $(GDRBASEDIR)/gdrtb3/singlibMC_tb4 \
  #	-lsing -L $(GDRBASEDIR)/gdrtb3/hibutil -lhib
  
@@ -100,30 +100,29 @@
  #--------------------------------
  #for x86_64 Debian Linux by S. Todo (2014.3)
  #
-@@ -167,32 +167,32 @@
- #--------------------------------
- #for x86_64 Debian Linux by S. Todo (2014.3)
- #
 -#ARCH_OBJ = arch_dgemm.o giounit_open.o giounit_util.o
 -#MDOBJ = mdunistd.o paraenv.o
+-#
+-# -DINCONSISTENT_THREAD_COMP
+-#    when thread computing is inconsistent, define this
 -#DEFINES = -O3 ${GDEFS} -DINCONSISTENT_THREAD_COMP
--
--#FFLAGS = -O3 -fopenmp -msse3 -fno-inline-functions ${DEFINES} -I/usr/include
--#F77FLAGS =
--#F90FLAGS = -ffree-line-length-none
--#FOPTNON = -O0
 +ARCH_OBJ = arch_dgemm.o giounit_open.o giounit_util.o
 +MDOBJ = mdunistd.o paraenv.o
 +DEFINES = -O3 ${GDEFS} -DINCONSISTENT_THREAD_COMP
  
--#LDFLAGS = -fopenmp
--#CFLAGS = -fopenmp -O3 -fno-inline-functions -I/usr/include
--#CXXFLAGS = -fopenmp -O3 -fno-inline-functions -I/usr/include
+-#FFLAGS = -O3 -fopenmp -msse3 -fno-inline-functions ${DEFINES} -I/usr/include
+-#F77FLAGS =
+-#F90FLAGS = -ffree-line-length-none
+-#FOPTNON = -O0
 +FFLAGS = -O3 -fopenmp -msse3 -fno-inline-functions ${DEFINES} -I/usr/include
 +F77FLAGS =
 +F90FLAGS = -ffree-line-length-none
 +FOPTNON = -O0
  
+-#LDFLAGS = -fopenmp
+-#CFLAGS = -fopenmp -O3 -fno-inline-functions -I/usr/include
+-#CXXFLAGS = -fopenmp -O3 -fno-inline-functions -I/usr/include
+-
 -#LIBLAPACK = -lfftw3_threads -llapack
 -#LIBBLAS = -lblas
 -#EXTRALIBS = -lstdc++
@@ -136,7 +135,9 @@
 +EXTRALIBS = -lstdc++
  
 -#XMPI_OBJ = xmpi_univ.o
+-##EIGSYSTM_OBJ = eigsystm.o
 -#EIGSYSTM_OBJ = eigsystm-lapack.o
+-##EIGSYSTM_OBJ = eigsystm-scalapack.o
 -#FFT3D_OBJ = fft3d_fftw.o
 -#FFTGRID_H_SRC = fftgrid-scl-fftw.h
 +XMPI_OBJ = xmpi_univ.o
@@ -155,7 +156,7 @@
  #--------------------------------
  # for K computer
  #
-@@ -261,11 +261,11 @@
+@@ -232,11 +227,11 @@
  #SCGDGOBJ = dvdsnmp.o hploc.o nlprj.o rotwfn.o sorthcl.o \
  #	exchange.o exchange_kern_cuda.o ${EIGSYSTM_OBJ}
  # for AMD GPU
@@ -171,7 +172,7 @@
  #==========================================================
  ################## FOR ESM METHOD by M.Otani 2006/02/06####################
  ################## Modified by Y.Ando 2011/01/21 ##########################
-@@ -505,10 +505,9 @@
+@@ -478,10 +473,9 @@
  tetrapdos: tetrapdos.F90 subr_tetra.o
  	${FC} -o tetrapdos tetrapdos.F90 subr_tetra.o ${LDLIBS}
  
@@ -186,9 +187,9 @@
  	fftgrid.h mkl_dfti.f90 fftgrid-vx.h \
 --- /dev/null
 +++ b/src/Makefile
-@@ -0,0 +1,543 @@
+@@ -0,0 +1,511 @@
 +# Copyright (c) 1983-2000 TAPP Consortium
-+# Copyright (c) 2000-2014 Yoshihide Yoshimoto
++# Copyright (c) 2000-2016 Yoshihide Yoshimoto
 +######################################################################
 +# Makefile for xTAPP programs
 +######################################################################
@@ -322,40 +323,6 @@
 +#--------------------------------
 +#for x86_64 Debian Linux by S. Todo (2014.3)
 +#
-+#ARCH_OBJ = arch_dgemm.o giounit_open.o giounit_util.o
-+#MDOBJ = mdunistd.o paraenv.o
-+#
-+# -DINCONSISTENT_THREAD_COMP
-+#    when thread computing is inconsistent, define this
-+#DEFINES = -O3 ${GDEFS} -DINCONSISTENT_THREAD_COMP
-+
-+#FFLAGS = -O3 -fopenmp -msse3 -fno-inline-functions ${DEFINES} -I/usr/include
-+#F77FLAGS =
-+#F90FLAGS = -ffree-line-length-none
-+#FOPTNON = -O0
-+
-+#LDFLAGS = -fopenmp
-+#CFLAGS = -fopenmp -O3 -fno-inline-functions -I/usr/include
-+#CXXFLAGS = -fopenmp -O3 -fno-inline-functions -I/usr/include
-+
-+#LIBLAPACK = -lfftw3_threads -llapack
-+#LIBBLAS = -lblas
-+#EXTRALIBS = -lstdc++
-+
-+#XMPI_OBJ = xmpi_univ.o
-+##EIGSYSTM_OBJ = eigsystm.o
-+#EIGSYSTM_OBJ = eigsystm-lapack.o
-+##EIGSYSTM_OBJ = eigsystm-scalapack.o
-+#FFT3D_OBJ = fft3d_fftw.o
-+#FFTGRID_H_SRC = fftgrid-scl-fftw.h
-+
-+#CC = gcc
-+#CXX = g++
-+#FC_CIF = gfortran
-+#FFLAG_CIF = 
-+#--------------------------------
-+#for x86_64 Debian Linux by S. Todo (2014.3)
-+#
 +ARCH_OBJ = arch_dgemm.o giounit_open.o giounit_util.o
 +MDOBJ = mdunistd.o paraenv.o
 +DEFINES = -O3 ${GDEFS} -DINCONSISTENT_THREAD_COMP
@@ -475,7 +442,7 @@
 +	$(FFT3D_OBJ) \
 +	bandchrg.o symchrg.o ioqg-core.o ldaxc.o \
 +	gga-wb.o ${XCOBJ} initwfn.o p10vb.o subrpot.o makedd.o makeqg.o \
-+	util.o converter.o symutil.o chkinput.o \
++	getqy.o util.o converter.o symutil.o chkinput.o \
 +	iounit.o utilmpi.o symwfn.o $(ARCH_OBJ) \
 +	$(XMPI_OBJ) ${MDOBJ} timeprof.o \
 +	subr_input.o read_tappinput.o subr_kpoint.o
@@ -508,7 +475,7 @@
 +WFN2CHGOBJ = wfn2chg.o vbchrg.o chainjob.o \
 +	crgen.o zxtrap.o bunpu.o ${COMMONOBJ} nlprj.o meshgen.o ${ESMMODOBJ}
 +WANNIEROBJ = wannier.o calcwannier.o chainjob.o zxtrap.o wannier_metal.o \
-+	${COMMONOBJ} meshgen.o ${ESMMODOBJ}
++	${COMMONOBJ} meshgen.o nlprj.o ${ESMMODOBJ}
 +PEFCOSOBJ  = pefcos.o ${MDOBJ} util.o \
 +	subr_input.o read_tappinput.o chainjob.o xcf_types.o zxtrap.o \
 +	timeprof.o iounit.o
@@ -562,7 +529,7 @@
 +wannier.o: wannier.F90 config90.h chainjob.o iounit.o util.o \
 +	types.o bsplpot.o meshgen.o chkinput.o subr_input.o calcwannier.o
 +wannier_metal.o: wannier_metal.F90 types.o meshgen.o \
-+	fftgrid.h ${FFT3D_OBJ} util.o
++	fftgrid.h ${FFT3D_OBJ} util.o bsplpot.o converter.o
 +stmitgdos.o: stmitgdos.F90 util.o sdoss.o bsplpot.o crgen.o \
 +	iounit.o diag_hml.o converter.o fftgrid.h meshgen.o
 +cgmrpt.o: cgmrpt.F90 config90.h chainjob.o util.o iounit.o engdffr.o \
@@ -602,10 +569,12 @@
 +initlpt.o: initlpt.F90 iounit.o util.o ioniclpot.o bsplpot.o atomicchrg.o \
 +	potihxc.o meshgen.o converter.o fftgrid.h
 +makedd.o: makedd.F90 util.o bsplpot.o types.o converter.o timeprof.o
++makeqg.o: makeqg.f90 getqy.o
 +bunpu.o: bunpu.F90 $(FFT3D_OBJ) types.o bsplpot.o crgen.o fftgrid.h
 +vbchrg.o: vbchrg.f90 bunpu.o converter.o types.o util.o nlprj.o symwfn.o \
 +	meshgen.o
-+calcwannier.o: calcwannier.f90 types.o subr_kpoint.o meshgen.o wannier_metal.o
++calcwannier.o: calcwannier.f90 types.o subr_kpoint.o meshgen.o wannier_metal.o \
++	makeqg.o bsplpot.o converter.o nlprj.o
 +ewald.o: ewald.F90 util.o bsplpot.o refforce-ewald.o timeprof.o ${ESMMNGOBJ}
 +doss.o: doss.f90 iounit.o meshgen.o
 +moldyn.o: moldyn.F90 types.o bsplpot.o iounit.o converter.o makedd.o \
@@ -701,7 +670,7 @@
 +	pfft3ds.f90 fft3dsp.f90 fft3dsp_subr.f90 fft3duz.f90 fft3duz_subr.f90 \
 +	fftgrid.h mkl_dfti.f90 fftgrid-vx.h \
 +	xticonv strconv diffstr iplstr cmpstr \
-+	rm -f dftd3/*.o
++	dftd3/*.o
 +
 +################## FOR ESM METHOD by M.Otani 2006/02/06####################
 +################## Modified by Y.Ando 2011/01/21 ##########################
@@ -713,8 +682,8 @@
 +        esm_pot.o esm_ewald.o
 +
 +tgz:
-+	tar cf xTAPP.tar *.F *.f90 *.F90 config.h-dist \
-+	Makefile-dist config90.h-dist
++	tar cf xTAPP.tar *.F *.f90 *.F90 config.h \
++	Makefile-dist config90.h
 +	gzip -f -9 xTAPP.tar
 +
 +tags:
@@ -730,62 +699,6 @@
 +# Local Variables: ***
 +# mode:Makefile ***
 +# End:***
---- /dev/null
-+++ b/src/config.h
-@@ -0,0 +1,25 @@
-+C
-+C Copyright (c) 1983-2000 TAPP Consortium
-+C Copyright (c) 2000-2013 Yoshihide Yoshimoto
-+C
-+C     ==============================================================
-+C     config.h -- defines parameters, etc.
-+C     ==============================================================
-+C
-+C     -----------------------------------------------------------------
-+C     nsymq: MAXnum of symmetry operations
-+C            (48 is enough including the inversion symmetry.)
-+C     -----------------------------------------------------------------
-+      integer nsymq
-+      parameter (nsymq=48)
-+C
-+C     -----------------------------------------------------------------
-+C     lmax:  MAXnum of L(angular momentum)
-+C     maxr:  MAXnum of Reference energies
-+C     nopt:  Number of OPTions
-+C     -----------------------------------------------------------------
-+      integer nband,lmax,maxr,nopt
-+      parameter (lmax=4,maxr=2)
-+      parameter (nopt=6)
-+C
-+C     -- end of config.h
---- /dev/null
-+++ b/src/config90.h
-@@ -0,0 +1,25 @@
-+!
-+! Copyright (c) 1983-2000 TAPP Consortium
-+! Copyright (c) 2000-2013 Yoshihide Yoshimoto
-+!
-+!  ==============================================================
-+!  config90.h -- defines parameters, etc.
-+!  ==============================================================
-+!
-+!  -----------------------------------------------------------------
-+!  nsymq: MAXnum of symmetry operations
-+!         (48 is enough including the inversion symmetry.)
-+!  -----------------------------------------------------------------
-+  integer nsymq
-+  parameter (nsymq=48)
-+!
-+!  -----------------------------------------------------------------
-+!  lmax:  MAXnum of L(angular momentum)
-+!  maxr:  MAXnum of Reference energies
-+!  nopt:  Number of OPTions
-+!  -----------------------------------------------------------------
-+  integer lmax,maxr,nopt
-+  parameter (lmax=4,maxr=2)
-+  parameter (nopt=6)
-+!
-+! -- end of config90.h
 --- /dev/null
 +++ b/sample/example-cu/cu.sh
 @@ -0,0 +1,21 @@
@@ -812,7 +725,7 @@
 +time wfn2ee cu '1 1 0' '1 0 1' '0 1 1' '-16 -16 -16' '32 32 32'
 --- a/src/util.f90
 +++ b/src/util.f90
-@@ -1099,13 +1099,13 @@
+@@ -1838,13 +1838,13 @@
      integer,intent(in):: nf
      character(len=*):: msg
      integer,intent(out):: info

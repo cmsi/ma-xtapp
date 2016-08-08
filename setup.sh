@@ -28,3 +28,5 @@ tar zxf $DATA_DIR/xTAPP-develop-$VERSION_BASE.tgz
 mv xTAPP-develop-$VERSION_BASE $BUILD_DIR 
 tar zcf xtapp_$VERSION_BASE.orig.tar.gz $BUILD_DIR
 cp -frp $SCRIPT_DIR/xtapp/debian $BUILD_DIR
+cd $BUILD_DIR
+dch --release "" --distribution $(lsb_release -s -c) --force-distribution

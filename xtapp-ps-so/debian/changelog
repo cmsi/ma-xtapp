@@ -1,0 +1,5 @@
+xtapp-ps-so (20160420-1) UNRELEASED; urgency=low
+
+  * New package for spin-orbit interaction support (development version)
+
+ -- Synge Todo <wistaria@phys.s.u-tokyo.ac.jp>  Mon, 08 Aug 2016 08:07:50 +0000

@@ -3,7 +3,7 @@ Section: scientific
 Priority: extra
 Maintainer: Synge Todo <wistaria@phys.s.u-tokyo.ac.jp>
 Build-Depends: debhelper (>= 8.0.0), texlive-lang-cjk, nkf, mpi-default-dev,
- libfftw3-dev, liblapack-dev, gfortran
+ libfftw3-dev, liblapack-dev, gfortran, ghostscript
 Standards-Version: 3.9.3
 Homepage: http://xtapp.cp.is.s.u-tokyo.ac.jp
 

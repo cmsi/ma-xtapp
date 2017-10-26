@@ -172,7 +172,7 @@
  #==========================================================
  ################## FOR ESM METHOD by M.Otani 2006/02/06####################
  ################## Modified by Y.Ando 2011/01/21 ##########################
-@@ -478,10 +473,9 @@
+@@ -481,10 +476,9 @@
  tetrapdos: tetrapdos.F90 subr_tetra.o
  	${FC} -o tetrapdos tetrapdos.F90 subr_tetra.o ${LDLIBS}
  
@@ -187,9 +187,9 @@
  	fftgrid.h mkl_dfti.f90 fftgrid-vx.h \
 --- /dev/null
 +++ b/src/Makefile
-@@ -0,0 +1,511 @@
+@@ -0,0 +1,514 @@
 +# Copyright (c) 1983-2000 TAPP Consortium
-+# Copyright (c) 2000-2016 Yoshihide Yoshimoto
++# Copyright (c) 2000-2017 Yoshihide Yoshimoto
 +######################################################################
 +# Makefile for xTAPP programs
 +######################################################################
@@ -478,10 +478,11 @@
 +	${COMMONOBJ} meshgen.o nlprj.o ${ESMMODOBJ}
 +PEFCOSOBJ  = pefcos.o ${MDOBJ} util.o \
 +	subr_input.o read_tappinput.o chainjob.o xcf_types.o zxtrap.o \
-+	timeprof.o iounit.o
++	timeprof.o iounit.o symutil.o
 +PE2DOSOBJ  = pe2dos.o ${MDOBJ} util.o subr_tetra.o p2s.o iounit.o
 +HMATR2BNDOBJ  = hmatr2bnd.o ${MDOBJ} util.o wannier_util.o \
-+	subr_input.o read_tappinput.o chainjob.o zxtrap.o timeprof.o iounit.o
++	subr_input.o read_tappinput.o chainjob.o zxtrap.o timeprof.o iounit.o \
++	symutil.o
 +
 +inipot: ${INIPOTOBJ}
 +	${FC} ${LDFLAGS} -o $@ ${INIPOTOBJ} ${LDLIBS}
@@ -529,7 +530,7 @@
 +wannier.o: wannier.F90 config90.h chainjob.o iounit.o util.o \
 +	types.o bsplpot.o meshgen.o chkinput.o subr_input.o calcwannier.o
 +wannier_metal.o: wannier_metal.F90 types.o meshgen.o \
-+	fftgrid.h ${FFT3D_OBJ} util.o bsplpot.o converter.o
++	fftgrid.h ${FFT3D_OBJ} util.o bsplpot.o converter.o symutil.o
 +stmitgdos.o: stmitgdos.F90 util.o sdoss.o bsplpot.o crgen.o \
 +	iounit.o diag_hml.o converter.o fftgrid.h meshgen.o
 +cgmrpt.o: cgmrpt.F90 config90.h chainjob.o util.o iounit.o engdffr.o \
@@ -548,7 +549,8 @@
 +	ewald.o stropt_cnstr.o
 +ioniclpot.o: ioniclpot.F90 ${FFT3D_OBJ} util.o bsplpot.o potihxc.o fftgrid.h \
 +	${ESMMNGOBJ}
-+chainjob.o: chainjob.f90 iounit.o zxtrap.o util.o types.o meshgen.o bsplpot.o
++chainjob.o: chainjob.f90 iounit.o zxtrap.o util.o types.o meshgen.o bsplpot.o \
++	symutil.o
 +bandchrg.o: bandchrg.F90 ${FFT3D_OBJ} types.o $(XMPI_OBJ) symchrg.o fftgrid.h \
 +	timeprof.o subr_kpoint.o
 +potihxc.o: potihxc.F90 ${FFT3D_OBJ} gga-wb.o ldaxc.o \
@@ -599,6 +601,7 @@
 +read_tappinput.o: read_tappinput.f90 chainjob.o xcf_types.o calcwannier.o
 +subr_input.o: subr_input.F90 read_tappinput.o util.o calcwannier.o
 +utilmpi.o: utilmpi.F90 timeprof.o
++subr_kpoint.o: subr_kpoint.F90 util.o
 +dftd2.o: dftd2.F90 util.o bsplpot.o
 +dftd3_sg.o: dftd3_sg.F90 util.o bsplpot.o
 +

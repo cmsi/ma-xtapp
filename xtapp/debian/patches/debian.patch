@@ -130,7 +130,7 @@
 +CFLAGS = -fopenmp -O3 -fno-inline-functions -I/usr/include
 +CXXFLAGS = -fopenmp -O3 -fno-inline-functions -I/usr/include
 +
-+LIBLAPACK = -lfftw3_threads -llapack
++LIBLAPACK = -lfftw3_threads -lfftw3 -llapack
 +LIBBLAS = -lblas
 +EXTRALIBS = -lstdc++
  
@@ -336,7 +336,7 @@
 +CFLAGS = -fopenmp -O3 -fno-inline-functions -I/usr/include
 +CXXFLAGS = -fopenmp -O3 -fno-inline-functions -I/usr/include
 +
-+LIBLAPACK = -lfftw3_threads -llapack
++LIBLAPACK = -lfftw3_threads -lfftw3 -llapack
 +LIBBLAS = -lblas
 +EXTRALIBS = -lstdc++
 +

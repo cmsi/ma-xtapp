@@ -1,4 +1,4 @@
-xtapp-ps-extra (140401-2) wheezy; urgency=low
+xtapp-ps-extra (140401-2) unstable; urgency=low
 
   * Moved CAPZ and norm-conserving + PBE from xtapp-ps
 

@@ -1,4 +1,4 @@
-xtapp-ps-so (20160420-1) UNRELEASED; urgency=low
+xtapp-ps-so (20160420-1) unstable; urgency=low
 
   * New package for spin-orbit interaction support (development version)
 

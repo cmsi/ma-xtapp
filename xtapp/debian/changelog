@@ -2,7 +2,7 @@ xtapp (170619-3) unstable; urgency=low
 
   * Support for Stretch
 
- -- Synge Todo <wistaria@phys.s.u-tokyo.ac.jp>  Fix for linking FFTW3 on Jessie
+ -- Synge Todo <wistaria@phys.s.u-tokyo.ac.jp>  Thu, 02 Nov 2017 00:41:26 +0900
 
 xtapp (170619-2) unstable; urgency=low
 

@@ -52,29 +52,3 @@
  	dvipdfmx -o formalism.pdf formalism.dvi
  
  inputformat.pdf:
---- a/src/vbchrg.f90
-+++ b/src/vbchrg.f90
-@@ -834,7 +834,7 @@
- 
-        call rg2tsu2(rg(:,:,jrg),aa,tsu2)
-        psum = (0.0d0,0.0d0)
--       if (srg(irdkpt%irrg(irg))) then
-+       if (srg(irdkpt%irrg(irg)).eq.1) then
-           do ib=1,nw
-              do jb=1,wan_n_occ
-                 do ig=bkm,ekm
---- a/src/wannier.F90
-+++ b/src/wannier.F90
-@@ -227,9 +227,9 @@
-      call MPI_FINALIZE(ierr)
-      stop
-   end if
--  if ( mod(nk,mmm(1,2,1).ne.0) .or. &
--       mod(nk,mmm(2,2,1).ne.0) .or. &
--       mod(nk,mmm(3,2,1).ne.0) ) then
-+  if ( mod(nk,mmm(1,2,1)).ne.0 .or. &
-+       mod(nk,mmm(2,2,1)).ne.0 .or. &
-+       mod(nk,mmm(3,2,1)).ne.0 ) then
-      write(6,*) 'mod( bz_mesh, mmm(1:3,2,1) ) must be 0 for wannier'
-      call MPI_FINALIZE(ierr)
-      stop

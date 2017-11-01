@@ -1,2 +1,3 @@
 makefile.patch
+fortran.patch
 debian.patch

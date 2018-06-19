@@ -1,6 +1,6 @@
 --- a/src/Makefile-dist
 +++ b/src/Makefile-dist
-@@ -52,35 +52,35 @@
+@@ -53,35 +53,35 @@
  #--------------------------------
  # for Intel Linux and Intel Fortran Compiler 11.0
  #
@@ -46,49 +46,8 @@
  #
  # for single-thread
  ##LIBLAPACK = -lmkl_lapack95_lp64 # for composerxe-2011
-@@ -100,70 +100,65 @@
- #	-lgdrdgemm-ovl -L $(GDRBASEDIR)/gdrtb3/singlibMC_tb4 \
- #	-lsing -L $(GDRBASEDIR)/gdrtb3/hibutil -lhib
- 
--ARCH_OBJ = arch_dgemm.o
-+#ARCH_OBJ = arch_dgemm.o
- #ARCH_OBJ = arch_gdr.o
- #ARCH_OBJ = arch_nehalem.o
--arch_nehalem.o: arch_nehalem.f90 timeprof.o
--	${FC} -O3 -openmp -msse3 -fno-inline-functions -unroll=0 -traceback ${DEFINES} -c $<
-+#arch_nehalem.o: arch_nehalem.f90 timeprof.o
-+#	${FC} -O3 -openmp -msse3 -fno-inline-functions -unroll=0 -traceback ${DEFINES} -c $<
- 
--XMPI_OBJ = xmpi_univ.o
-+#XMPI_OBJ = xmpi_univ.o
- 
--EIGSYSTM_OBJ = eigsystm-lapack.o
-+#EIGSYSTM_OBJ = eigsystm-lapack.o
- #EIGSYSTM_OBJ = eigsystm-scalapack.o
- 
--FFT3D_OBJ = fft3d_mkl.o
--mkl_dfti.o: mkl_dfti.f90
--mkl_dfti.f90:
--	cp ${MKLROOT}/include/mkl_dfti.f90 .
--FFTGRID_H_SRC = fftgrid-scl.h
-+#FFT3D_OBJ = fft3d_mkl.o
-+#mkl_dfti.o: mkl_dfti.f90
-+#mkl_dfti.f90:
-+#	cp ${MKLROOT}/include/mkl_dfti.f90 .
-+#FFTGRID_H_SRC = fftgrid-scl.h
- 
- #FFT3D_OBJ = fft3d_fftw.o
- #FFTGRID_H_SRC = fftgrid-scl-fftw.h
- 
--exchange_kern_cuda.o: exchange_kern_cuda.cu exchange_kern_cuda.h
--	nvcc -ccbin=icc -Xcompiler -openmp -I /usr/local/cuda40/cuda/NVIDIA_GPU_Computing_SDK/C/common/inc -m64 -c -arch sm_20 exchange_kern_cuda.cu
-+#exchange_kern_cuda.o: exchange_kern_cuda.cu exchange_kern_cuda.h
-+#	nvcc -ccbin=icc -Xcompiler -openmp -I /usr/local/cuda40/cuda/NVIDIA_GPU_Computing_SDK/C/common/inc -m64 -c -arch sm_20 exchange_kern_cuda.cu
- 
--mdlin.o: mdlin.F
--	${FC} -c ${DEFINES} ${FOPTNON} mdlin.F
-+#mdlin.o: mdlin.F
-+#	${FC} -c ${DEFINES} ${FOPTNON} mdlin.F
+@@ -128,43 +128,41 @@
+ 	${FC} -c ${DEFINES} ${FOPTNON} mdlin.F
  
  # for AMD GPU
 -CC = icc
@@ -102,13 +61,12 @@
  #
 -#ARCH_OBJ = arch_dgemm.o giounit_open.o giounit_util.o
 -#MDOBJ = mdunistd.o paraenv.o
--#
--# -DINCONSISTENT_THREAD_COMP
--#    when thread computing is inconsistent, define this
--#DEFINES = -O3 ${GDEFS} -DINCONSISTENT_THREAD_COMP
 +ARCH_OBJ = arch_dgemm.o giounit_open.o giounit_util.o
 +MDOBJ = mdunistd.o paraenv.o
-+DEFINES = -O3 ${GDEFS} -DINCONSISTENT_THREAD_COMP
+ #
+ # -DINCONSISTENT_THREAD_COMP
+ #    when thread computing is inconsistent, define this
+ #DEFINES = -O3 ${GDEFS} -DINCONSISTENT_THREAD_COMP
  
 -#FFLAGS = -O3 -fopenmp -msse3 -fno-inline-functions ${DEFINES} -I/usr/include
 -#F77FLAGS =
@@ -123,7 +81,7 @@
 -#CFLAGS = -fopenmp -O3 -fno-inline-functions -I/usr/include
 -#CXXFLAGS = -fopenmp -O3 -fno-inline-functions -I/usr/include
 -
--#LIBLAPACK = -lfftw3_threads -llapack
+-#LIBLAPACK = -lfftw3_threads -lfftw3 -llapack
 -#LIBBLAS = -lblas
 -#EXTRALIBS = -lstdc++
 +LDFLAGS = -fopenmp
@@ -156,7 +114,7 @@
  #--------------------------------
  # for K computer
  #
-@@ -232,11 +227,11 @@
+@@ -233,11 +231,11 @@
  #SCGDGOBJ = dvdsnmp.o hploc.o nlprj.o rotwfn.o sorthcl.o \
  #	exchange.o exchange_kern_cuda.o ${EIGSYSTM_OBJ}
  # for AMD GPU
@@ -172,22 +130,18 @@
  #==========================================================
  ################## FOR ESM METHOD by M.Otani 2006/02/06####################
  ################## Modified by Y.Ando 2011/01/21 ##########################
-@@ -481,10 +476,9 @@
+@@ -506,7 +504,7 @@
  tetrapdos: tetrapdos.F90 subr_tetra.o
  	${FC} -o tetrapdos tetrapdos.F90 subr_tetra.o ${LDLIBS}
  
 -clean: esm_clean
 +clean distclean: esm_clean
  	/bin/rm -f core *.o *~ *.bak *.orig TAGS *.rej *.mod *.log \
--	vbpef vbstm cgmrpt mdrpt inipot wfn2chg pe2dos tetrapdos \
--	hmatr2bnd wannier pefcos \
-+	inipot cgmrpt mdrpt vbpef vbstm wfn2chg wannier pefcos xticonv strconv diffstr iplstr cmpstr pe2dos tetrapdos hmatr2bnd \
- 	a.out \
- 	pfft3ds.f90 fft3dsp.f90 fft3dsp_subr.f90 fft3duz.f90 fft3duz_subr.f90 \
- 	fftgrid.h mkl_dfti.f90 fftgrid-vx.h \
+ 	vbpef vbstm cgmrpt mdrpt inipot wfn2chg pe2dos tetrapdos \
+ 	hmatr2bnd wannier pefcos atmcdist distpart \
 --- /dev/null
 +++ b/src/Makefile
-@@ -0,0 +1,514 @@
+@@ -0,0 +1,543 @@
 +# Copyright (c) 1983-2000 TAPP Consortium
 +# Copyright (c) 2000-2017 Yoshihide Yoshimoto
 +######################################################################
@@ -202,7 +156,8 @@
 +
 +default: inipot cgmrpt mdrpt vbpef vbstm wfn2chg wannier pefcos \
 +	xticonv strconv diffstr iplstr cmpstr pe2dos tetrapdos \
-+	hmatr2bnd
++	hmatr2bnd atmcdist distpart \
++	dftd3/*.o
 +
 +.F.o:
 +	${FC} ${F77FLAGS} ${FFLAGS} -c $<
@@ -290,31 +245,31 @@
 +#	-lgdrdgemm-ovl -L $(GDRBASEDIR)/gdrtb3/singlibMC_tb4 \
 +#	-lsing -L $(GDRBASEDIR)/gdrtb3/hibutil -lhib
 +
-+#ARCH_OBJ = arch_dgemm.o
++ARCH_OBJ = arch_dgemm.o
 +#ARCH_OBJ = arch_gdr.o
 +#ARCH_OBJ = arch_nehalem.o
-+#arch_nehalem.o: arch_nehalem.f90 timeprof.o
-+#	${FC} -O3 -openmp -msse3 -fno-inline-functions -unroll=0 -traceback ${DEFINES} -c $<
++arch_nehalem.o: arch_nehalem.f90 timeprof.o
++	${FC} -O3 -openmp -msse3 -fno-inline-functions -unroll=0 -traceback ${DEFINES} -c $<
 +
-+#XMPI_OBJ = xmpi_univ.o
++XMPI_OBJ = xmpi_univ.o
 +
-+#EIGSYSTM_OBJ = eigsystm-lapack.o
++EIGSYSTM_OBJ = eigsystm-lapack.o
 +#EIGSYSTM_OBJ = eigsystm-scalapack.o
 +
-+#FFT3D_OBJ = fft3d_mkl.o
-+#mkl_dfti.o: mkl_dfti.f90
-+#mkl_dfti.f90:
-+#	cp ${MKLROOT}/include/mkl_dfti.f90 .
-+#FFTGRID_H_SRC = fftgrid-scl.h
++FFT3D_OBJ = fft3d_mkl.o
++mkl_dfti.o: mkl_dfti.f90
++mkl_dfti.f90:
++	cp ${MKLROOT}/include/mkl_dfti.f90 .
++FFTGRID_H_SRC = fftgrid-scl.h
 +
 +#FFT3D_OBJ = fft3d_fftw.o
 +#FFTGRID_H_SRC = fftgrid-scl-fftw.h
 +
-+#exchange_kern_cuda.o: exchange_kern_cuda.cu exchange_kern_cuda.h
-+#	nvcc -ccbin=icc -Xcompiler -openmp -I /usr/local/cuda40/cuda/NVIDIA_GPU_Computing_SDK/C/common/inc -m64 -c -arch sm_20 exchange_kern_cuda.cu
++exchange_kern_cuda.o: exchange_kern_cuda.cu exchange_kern_cuda.h
++	nvcc -ccbin=icc -Xcompiler -openmp -I /usr/local/cuda40/cuda/NVIDIA_GPU_Computing_SDK/C/common/inc -m64 -c -arch sm_20 exchange_kern_cuda.cu
 +
-+#mdlin.o: mdlin.F
-+#	${FC} -c ${DEFINES} ${FOPTNON} mdlin.F
++mdlin.o: mdlin.F
++	${FC} -c ${DEFINES} ${FOPTNON} mdlin.F
 +
 +# for AMD GPU
 +#CC = icc
@@ -325,7 +280,10 @@
 +#
 +ARCH_OBJ = arch_dgemm.o giounit_open.o giounit_util.o
 +MDOBJ = mdunistd.o paraenv.o
-+DEFINES = -O3 ${GDEFS} -DINCONSISTENT_THREAD_COMP
++#
++# -DINCONSISTENT_THREAD_COMP
++#    when thread computing is inconsistent, define this
++#DEFINES = -O3 ${GDEFS} -DINCONSISTENT_THREAD_COMP
 +
 +FFLAGS = -O3 -fopenmp -msse3 -fno-inline-functions ${DEFINES} -I/usr/include
 +F77FLAGS =
@@ -453,7 +411,7 @@
 +	${SCGDGOBJ} diag_hml.o ldos.o prclpt.o poisson.o sdoss.o p2d.o \
 +	meshgen.o replica.o stropt_cnstr.o ${ESMMODOBJ} dftd2.o \
 +	dftd3_sg.o dftd3/dftd3.o dftd3/copyc6.o \
-+	subr_tetra.o
++	subr_tetra.o subr_ekinor.o subr_shrtor.o subr_engpart.o
 +MDRPTOBJ = mdrpt.o moldyn.o ewald.o refforce-ewald.o scfloop.o zxtrap.o \
 +	engdffr.o crgen.o ioniclpot.o \
 +	chainjob.o doss.o p2s.o initlpt.o atomicchrg.o mdmuca.o \
@@ -461,8 +419,14 @@
 +	meshgen.o \
 +	ldos.o prclpt.o poisson.o sdoss.o p2d.o replica.o ${ESMMODOBJ} \
 +	dftd2.o dftd3_sg.o dftd3/dftd3.o dftd3/copyc6.o \
-+	subr_tetra.o
++	subr_tetra.o subr_ekinor.o subr_shrtor.o subr_engpart.o
 +INIPOTOBJ = inipot.o ${COMMONOBJ} replica.o ${ESMMODOBJ}
++ATMCDISTOBJ = atmcdist.o ${COMMONOBJ} atomicchrg.o meshgen.o chainjob.o \
++	zxtrap.o \
++	replica.o ${ESMMODOBJ}
++DISTPARTOBJ = distpart.o ${COMMONOBJ} atomicchrg.o meshgen.o chainjob.o \
++	zxtrap.o \
++	replica.o ${ESMMODOBJ} subr_engpart.o subr_distpart.o
 +VBPEFOBJ  = vbpef.o vbband.o bunpu.o crgen.o ${COMMONOBJ} \
 +	potihxc.o ${SCGDGOBJ} diag_hml.o \
 +	initlpt.o ioniclpot.o atomicchrg.o meshgen.o \
@@ -473,7 +437,8 @@
 +	diag_hml.o meshgen.o ${ESMMODOBJ} \
 +	subr_tetra.o
 +WFN2CHGOBJ = wfn2chg.o vbchrg.o chainjob.o \
-+	crgen.o zxtrap.o bunpu.o ${COMMONOBJ} nlprj.o meshgen.o ${ESMMODOBJ}
++	crgen.o zxtrap.o bunpu.o ${COMMONOBJ} nlprj.o meshgen.o ${ESMMODOBJ} \
++	subr_engpart.o
 +WANNIEROBJ = wannier.o calcwannier.o chainjob.o zxtrap.o wannier_metal.o \
 +	${COMMONOBJ} meshgen.o nlprj.o ${ESMMODOBJ}
 +PEFCOSOBJ  = pefcos.o ${MDOBJ} util.o \
@@ -486,6 +451,12 @@
 +
 +inipot: ${INIPOTOBJ}
 +	${FC} ${LDFLAGS} -o $@ ${INIPOTOBJ} ${LDLIBS}
++
++atmcdist: ${ATMCDISTOBJ}
++	${FC} ${LDFLAGS} -o $@ ${ATMCDISTOBJ} ${LDLIBS}
++
++distpart: ${DISTPARTOBJ}
++	${FC} ${LDFLAGS} -o $@ ${DISTPARTOBJ} ${LDLIBS}
 +
 +cgmrpt: ${CGMRPTOBJ}
 +	${FC} ${LDFLAGS} -o $@ ${CGMRPTOBJ} ${LDLIBS}
@@ -536,7 +507,8 @@
 +cgmrpt.o: cgmrpt.F90 config90.h chainjob.o util.o iounit.o engdffr.o \
 +	scfloop.o bsplpot.o makedd.o types.o doss.o initlpt.o initwfn.o meshgen.o \
 +	ewald.o linmin.o timeprof.o replica.o exchange.o \
-+	chkinput.o subr_input.o stropt_cnstr.o ${ESMMNGOBJ}
++	chkinput.o subr_input.o stropt_cnstr.o ${ESMMNGOBJ} subr_ekinor.o \
++	subr_shrtor.o subr_engpart.o crgen.o
 +inipot.o: inipot.F90 config90.h iounit.o bsplpot.o util.o xcf_types.o \
 +	replica.o chkinput.o subr_input.o subr_kpoint.o ${ESMMNGOBJ}
 +pe2dos.o: pe2dos.F90 subr_tetra.o
@@ -573,8 +545,8 @@
 +makedd.o: makedd.F90 util.o bsplpot.o types.o converter.o timeprof.o
 +makeqg.o: makeqg.f90 getqy.o
 +bunpu.o: bunpu.F90 $(FFT3D_OBJ) types.o bsplpot.o crgen.o fftgrid.h
-+vbchrg.o: vbchrg.f90 bunpu.o converter.o types.o util.o nlprj.o symwfn.o \
-+	meshgen.o
++vbchrg.o: vbchrg.F90 bunpu.o converter.o types.o util.o nlprj.o symwfn.o \
++	meshgen.o subr_engpart.o
 +calcwannier.o: calcwannier.f90 types.o subr_kpoint.o meshgen.o wannier_metal.o \
 +	makeqg.o bsplpot.o converter.o nlprj.o
 +ewald.o: ewald.F90 util.o bsplpot.o refforce-ewald.o timeprof.o ${ESMMNGOBJ}
@@ -582,7 +554,7 @@
 +moldyn.o: moldyn.F90 types.o bsplpot.o iounit.o converter.o makedd.o \
 +	engdffr.o scfloop.o atomicchrg.o mdmuca.o meshgen.o initwfn.o \
 +	meshgen.o converter.o ewald.o replica.o fftgrid.h \
-+	initlpt.o
++	initlpt.o subr_ekinor.o subr_shrtor.o subr_engpart.o crgen.o
 +mdrpt.o: mdrpt.F90 config90.h chainjob.o util.o iounit.o types.o bsplpot.o \
 +	moldyn.o mdmuca.o \
 +	initlpt.o initwfn.o meshgen.o timeprof.o scfloop.o \
@@ -598,12 +570,22 @@
 +zxtrap.o: zxtrap.f90 timeprof.o
 +p2s.o: p2s.F util.o subr_tetra.o
 +chkinput.o: chkinput.f90 symutil.o
-+read_tappinput.o: read_tappinput.f90 chainjob.o xcf_types.o calcwannier.o
++read_tappinput.o: read_tappinput.f90 chainjob.o xcf_types.o \
++	calcwannier.o subr_engpart.o
 +subr_input.o: subr_input.F90 read_tappinput.o util.o calcwannier.o
 +utilmpi.o: utilmpi.F90 timeprof.o
 +subr_kpoint.o: subr_kpoint.F90 util.o
 +dftd2.o: dftd2.F90 util.o bsplpot.o
 +dftd3_sg.o: dftd3_sg.F90 util.o bsplpot.o
++subr_engpart.o: subr_engpart.F90 $(FFT3D_OBJ)
++atmcdist.o: atmcdist.F90 iounit.o bsplpot.o util.o xcf_types.o \
++	replica.o chkinput.o subr_input.o subr_kpoint.o meshgen.o \
++	chainjob.o converter.o atomicchrg.o
++distpart.o: distpart.F90 iounit.o bsplpot.o util.o xcf_types.o \
++	replica.o chkinput.o subr_input.o \
++	chainjob.o converter.o types.o subr_engpart.o subr_distpart.o
++subr_ekinor.o: subr_ekinor.F90 types.o util.o subr_kpoint.o meshgen.o \
++	$(FFT3D_OBJ) $(XMPI_OBJ) symchrg.o timeprof.o
 +
 +hploc.o: hploc.F90 $(FFT3D_OBJ) fftgrid.h timeprof.o
 +nlprj.o: nlprj.f90 util.o $(XMPI_OBJ) $(ARCH_OBJ) bsplpot.o timeprof.o
@@ -668,7 +650,8 @@
 +
 +clean distclean: esm_clean
 +	/bin/rm -f core *.o *~ *.bak *.orig TAGS *.rej *.mod *.log \
-+	inipot cgmrpt mdrpt vbpef vbstm wfn2chg wannier pefcos xticonv strconv diffstr iplstr cmpstr pe2dos tetrapdos hmatr2bnd \
++	vbpef vbstm cgmrpt mdrpt inipot wfn2chg pe2dos tetrapdos \
++	hmatr2bnd wannier pefcos atmcdist distpart \
 +	a.out \
 +	pfft3ds.f90 fft3dsp.f90 fft3dsp_subr.f90 fft3duz.f90 fft3duz_subr.f90 \
 +	fftgrid.h mkl_dfti.f90 fftgrid-vx.h \
@@ -697,7 +680,7 @@
 +
 +install: default
 +	install -d $(DESTDIR)/usr/bin
-+	install inipot cgmrpt mdrpt vbpef vbstm wfn2chg wannier pefcos xticonv strconv diffstr iplstr cmpstr pe2dos tetrapdos hmatr2bnd $(DESTDIR)/usr/bin
++	install inipot cgmrpt mdrpt vbpef vbstm wfn2chg wannier pefcos xticonv strconv diffstr iplstr cmpstr pe2dos tetrapdos hmatr2bnd atmcdist distpart $(DESTDIR)/usr/bin
 +
 +# Local Variables: ***
 +# mode:Makefile ***

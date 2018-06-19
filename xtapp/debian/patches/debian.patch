@@ -1,6 +1,6 @@
 --- a/src/Makefile-dist
 +++ b/src/Makefile-dist
-@@ -53,35 +53,35 @@
+@@ -52,35 +52,35 @@
  #--------------------------------
  # for Intel Linux and Intel Fortran Compiler 11.0
  #
@@ -46,7 +46,7 @@
  #
  # for single-thread
  ##LIBLAPACK = -lmkl_lapack95_lp64 # for composerxe-2011
-@@ -128,43 +128,41 @@
+@@ -127,43 +127,41 @@
  	${FC} -c ${DEFINES} ${FOPTNON} mdlin.F
  
  # for AMD GPU
@@ -55,7 +55,7 @@
 -FFLAG_CIF = 
 +#CC = icc
 +#FC_CIF = ifort
-+#FFLAG_CIF = 
++#FFLAG_CIF =
  #--------------------------------
  #for x86_64 Debian Linux by S. Todo (2014.3)
  #
@@ -110,11 +110,11 @@
 +CC = gcc
 +CXX = g++
 +FC_CIF = gfortran
-+FFLAG_CIF = 
++FFLAG_CIF =
  #--------------------------------
  # for K computer
  #
-@@ -233,11 +231,11 @@
+@@ -232,11 +230,11 @@
  #SCGDGOBJ = dvdsnmp.o hploc.o nlprj.o rotwfn.o sorthcl.o \
  #	exchange.o exchange_kern_cuda.o ${EIGSYSTM_OBJ}
  # for AMD GPU
@@ -130,7 +130,7 @@
  #==========================================================
  ################## FOR ESM METHOD by M.Otani 2006/02/06####################
  ################## Modified by Y.Ando 2011/01/21 ##########################
-@@ -506,7 +504,7 @@
+@@ -505,7 +503,7 @@
  tetrapdos: tetrapdos.F90 subr_tetra.o
  	${FC} -o tetrapdos tetrapdos.F90 subr_tetra.o ${LDLIBS}
  
@@ -141,7 +141,7 @@
  	hmatr2bnd wannier pefcos atmcdist distpart \
 --- /dev/null
 +++ b/src/Makefile
-@@ -0,0 +1,543 @@
+@@ -0,0 +1,542 @@
 +# Copyright (c) 1983-2000 TAPP Consortium
 +# Copyright (c) 2000-2017 Yoshihide Yoshimoto
 +######################################################################
@@ -156,8 +156,7 @@
 +
 +default: inipot cgmrpt mdrpt vbpef vbstm wfn2chg wannier pefcos \
 +	xticonv strconv diffstr iplstr cmpstr pe2dos tetrapdos \
-+	hmatr2bnd atmcdist distpart \
-+	dftd3/*.o
++	hmatr2bnd atmcdist distpart
 +
 +.F.o:
 +	${FC} ${F77FLAGS} ${FFLAGS} -c $<
@@ -193,7 +192,7 @@
 +#
 +GDEFS = -DPWB_SORTED_BY_INDEX -DESM
 +#==========================================================
-+# Uncomment your machine's part and comment out all others. 
++# Uncomment your machine's part and comment out all others.
 +#--------------------------------
 +# for Intel Linux and Intel Fortran Compiler 11.0
 +#
@@ -274,7 +273,7 @@
 +# for AMD GPU
 +#CC = icc
 +#FC_CIF = ifort
-+#FFLAG_CIF = 
++#FFLAG_CIF =
 +#--------------------------------
 +#for x86_64 Debian Linux by S. Todo (2014.3)
 +#
@@ -306,7 +305,7 @@
 +CC = gcc
 +CXX = g++
 +FC_CIF = gfortran
-+FFLAG_CIF = 
++FFLAG_CIF =
 +#--------------------------------
 +# for K computer
 +#
@@ -320,7 +319,7 @@
 +#FFLAGS = -Kfast,parallel,openmp,ocl ${DEFINES}
 +#F77FLAGS =
 +#F90FLAGS = -I/home/apps/fftw/3.3/include
-+#FOPTNON = 
++#FOPTNON =
 +#LDFLAGS = -Kfast,parallel,openmp -Qt
 +#CFLAGS =
 +#
@@ -367,8 +366,8 @@
 +#	${FC} -c ${DEFINES} -O1 doss.f90
 +
 +#CC = fccpx -Kfast -Koptmsg=2
-+#FC_CIF = 
-+#FFLAG_CIF = 
++#FC_CIF =
++#FFLAG_CIF =
 +#==========================================================
 +# uncomment one and commet out others.
 +# for NVIDIA CUDA
@@ -595,7 +594,7 @@
 +	rotwfn.o sorthcl.o bsplpot.o exchange.o types.o xcf_types.o meshgen.o
 +exchange.o: exchange.F90 types.o symwfn.o timeprof.o meshgen.o potihxc.o \
 +	xcf_types.o fftgrid-vx.h
-+exchange_kern_opencl.o: exchange_kern_opencl.c exchange_kern_opencl.h 
++exchange_kern_opencl.o: exchange_kern_opencl.c exchange_kern_opencl.h
 +exchange_kern.o: exchange_kern.F90 util.o fftgrid.h $(FFT3D_OBJ)
 +fftgrid-vx.h: fftgrid-scl.h
 +	ln -s fftgrid-scl.h fftgrid-vx.h

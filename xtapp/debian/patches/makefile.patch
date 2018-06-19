@@ -9,27 +9,7 @@
 +	make $@ -C src
 --- a/src/Makefile-dist
 +++ b/src/Makefile-dist
-@@ -12,7 +12,8 @@
- 
- default: inipot cgmrpt mdrpt vbpef vbstm wfn2chg wannier pefcos \
- 	xticonv strconv diffstr iplstr cmpstr pe2dos tetrapdos \
--	hmatr2bnd atmcdist distpart
-+	hmatr2bnd atmcdist distpart \
-+	dftd3/*.o
- 
- .F.o:
- 	${FC} ${F77FLAGS} ${FFLAGS} -c $<
-@@ -512,7 +513,8 @@
- 	a.out \
- 	pfft3ds.f90 fft3dsp.f90 fft3dsp_subr.f90 fft3duz.f90 fft3duz_subr.f90 \
- 	fftgrid.h mkl_dfti.f90 fftgrid-vx.h \
--	xticonv strconv diffstr iplstr cmpstr
-+	xticonv strconv diffstr iplstr cmpstr \
-+	dftd3/*.o
- 
- ################## FOR ESM METHOD by M.Otani 2006/02/06####################
- ################## Modified by Y.Ando 2011/01/21 ##########################
-@@ -534,6 +536,10 @@
+@@ -534,6 +535,10 @@
  .F.f:
  	${CPP} -P ${DEFINES} $< | sed '/^ *$$/d' > $*.f
  

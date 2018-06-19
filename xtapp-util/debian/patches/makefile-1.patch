@@ -1,8 +1,14 @@
 Makefile for building Debian package
 --- /dev/null
 +++ b/Makefile
-@@ -0,0 +1,6 @@
-+tools %:
+@@ -0,0 +1,12 @@
++tools:
++	make tools -C fldtool
++	make tools -C inputconv
++	make tools -C mdtool
++	make tools -C minmaxband
++	make tools -C wfchg2pdos
++%:
 +	make $@ -C fldtool
 +	make $@ -C inputconv
 +	make $@ -C mdtool
@@ -10,7 +16,7 @@ Makefile for building Debian package
 +	make $@ -C wfchg2pdos
 --- /dev/null
 +++ b/fldtool/Makefile
-@@ -0,0 +1,98 @@
+@@ -0,0 +1,105 @@
 +# Copyright (c) 2000-2013 Yoshihide Yoshimoto
 +######################################################################
 +# default suffix rules. Do not edit this area.
@@ -20,6 +26,7 @@ Makefile for building Debian package
 +.SUFFIXES: .o .F90 .f90 .c
 +
 +tools: wfn2dx wfk2dx lpt2dx rho2dx rok2dx stm2dx rhomm lptmm wfn2ee \
++	wfn2respack rho2chgcar \
 +	exrho2dx stm2cci cmprho cmpband wfneig rho2xsf cmpamat cmppdos
 +
 +.f90.o:
@@ -59,6 +66,8 @@ Makefile for building Debian package
 +
 +wfn2dx: wfn2dx.F90 outzfldprsk.o $(FFT3D_OBJ) util.o fftgrid.h
 +	${FC} ${FFLAGS} -o wfn2dx wfn2dx.F90 outzfldprsk.o $(FFT3D_OBJ) util.o
++wfn2respack: wfn2respack.F90
++	${FC} ${FFLAGS} -o wfn2respack wfn2respack.F90
 +wfk2dx: wfk2dx.F90 outzfldprsk.o $(FFT3D_OBJ) fftgrid.h
 +	${FC} ${FFLAGS} -o wfk2dx wfk2dx.F90 outzfldprsk.o $(FFT3D_OBJ)
 +lpt2dx: lpt2dx.F90 outfldpr.o $(FFT3D_OBJ) util.o fftgrid.h
@@ -87,6 +96,8 @@ Makefile for building Debian package
 +	${FC} ${FFLAGS} -o exrho2dx exrho2dx.F90 outfldpr.o $(FFT3D_OBJ) util.o
 +rho2xsf: rho2xsf.F90
 +	${FC} ${FFLAGS} -o rho2xsf rho2xsf.F90
++rho2chgcar: rho2chgcar.F90 util.o subr_fmtconv.o subr_readstr.o
++	${FC} ${FFLAGS} -o rho2chgcar rho2chgcar.F90 subr_fmtconv.o subr_readstr.o util.o
 +cmpamat: cmpamat.F90
 +	${FC} ${FFLAGS} -o cmpamat cmpamat.F90
 +cmppdos: cmppdos.F90
@@ -95,6 +106,7 @@ Makefile for building Debian package
 +clean distclean:
 +	/bin/rm -f core *.o *.f *~ *.bak *.orig TAGS *.rej *.mod *.log \
 +	wfn2dx lpt2dx rho2dx rok2dx wfk2dx stm2dx rhomm lptmm wfn2ee stm2cci \
++	wfn2respack rho2chgcar \
 +	cmprho cmpband wfneig rho2xsf cmpamat cmppdos a.out \
 +	pfft3ds.f90 fft3dsp.f90 fft3dsp_subr.f90 fft3duz.f90 fft3duz_subr.f90 \
 +	fftgrid.h
@@ -103,7 +115,8 @@ Makefile for building Debian package
 +	install -d $(DESTDIR)/usr/bin
 +	install \
 +	wfn2dx wfk2dx lpt2dx rho2dx rok2dx stm2dx rhomm lptmm wfn2ee \
-+        exrho2dx stm2cci cmprho cmpband wfneig rho2xsf cmpamat cmppdos \
++	wfn2respack rho2chgcar \
++	exrho2dx stm2cci cmprho cmpband wfneig rho2xsf cmpamat cmppdos \
 +	$(DESTDIR)/usr/bin
 +
 +# Local Variables: ***

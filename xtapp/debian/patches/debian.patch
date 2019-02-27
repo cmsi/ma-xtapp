@@ -141,7 +141,7 @@
  	hmatr2bnd wannier pefcos atmcdist distpart \
 --- /dev/null
 +++ b/src/Makefile
-@@ -0,0 +1,542 @@
+@@ -0,0 +1,547 @@
 +# Copyright (c) 1983-2000 TAPP Consortium
 +# Copyright (c) 2000-2017 Yoshihide Yoshimoto
 +######################################################################
@@ -284,7 +284,12 @@
 +#    when thread computing is inconsistent, define this
 +#DEFINES = -O3 ${GDEFS} -DINCONSISTENT_THREAD_COMP
 +
-+FFLAGS = -O3 -fopenmp -msse3 -fno-inline-functions ${DEFINES} -I/usr/include
++DEB_RELEASE ?= $(shell lsb_release -c -s)
++ifneq ($(DEB_RELEASE), wheezy)
++  FFLAGS = -ffpe-summary=none -O3 -fopenmp -msse3 -fno-inline-functions ${DEFINES} -I/usr/include
++else
++  FFLAGS = -O3 -fopenmp -msse3 -fno-inline-functions ${DEFINES} -I/usr/include
++endif
 +F77FLAGS =
 +F90FLAGS = -ffree-line-length-none
 +FOPTNON = -O0

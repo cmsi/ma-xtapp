@@ -16,7 +16,7 @@ Makefile for building Debian package
 +	make $@ -C wfchg2pdos
 --- /dev/null
 +++ b/fldtool/Makefile
-@@ -0,0 +1,105 @@
+@@ -0,0 +1,110 @@
 +# Copyright (c) 2000-2013 Yoshihide Yoshimoto
 +######################################################################
 +# default suffix rules. Do not edit this area.
@@ -43,12 +43,17 @@ Makefile for building Debian package
 +FC = gfortran
 +FOMP_FLAGS = -fopenmp
 +
++DEB_RELEASE ?= $(shell lsb_release -c -s)
++ifneq ($(DEB_RELEASE), wheezy)
++  FFLAGS_EXTRA = -ffpe-summary=none
++endif
++
 +ifeq ($(shell uname -m),x86_64)
-+  FFLAGS = -O3 -msse3 -fno-inline-functions
++  FFLAGS = -O3 -msse3 -fno-inline-functions $(FFLAGS_EXTRA)
 +  PFFT3DUZ_SUBR_OBJ = pfft3duz_subr_sse3.o pfft3duz_kern_sse3.o
 +  FFT3D_OBJ = pfft3duz.o $(PFFT3DUZ_SUBR_OBJ)
 +else
-+  FFLAGS = -O3 -fno-inline-functions
++  FFLAGS = -O3 -fno-inline-functions $(FFLAGS_EXTRA)
 +  FFT3D_OBJ = fft3ds.o
 +endif
 +FFTGRID_H_SRC = fftgrid-scl.h
@@ -124,7 +129,7 @@ Makefile for building Debian package
 +# End:***
 --- /dev/null
 +++ b/inputconv/Makefile
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,53 @@
 +# Copyright (c) 2000-2013 Yoshihide Yoshimoto
 +######################################################################
 +# $Id: Makefile-dist,v 1.1 2012-11-15 01:43:38 yosimoto Exp $
@@ -151,7 +156,13 @@ Makefile for building Debian package
 +# tsurugi, nehalem
 +#
 +FC = gfortran
-+FFLAGS = -O3 -msse3 -fno-inline-functions
++
++DEB_RELEASE ?= $(shell lsb_release -c -s)
++ifneq ($(DEB_RELEASE), wheezy)
++  FFLAGS_EXTRA = -ffpe-summary=none
++endif
++
++FFLAGS = -O3 -msse3 -fno-inline-functions $(FFLAGS_EXTRA)
 +
 +CC = gcc -O3 -msse3 -fno-inline-functions
 +#--------------------------------------------------------------------
@@ -174,21 +185,27 @@ Makefile for building Debian package
 +# End:***
 --- a/mdtool/Makefile
 +++ b/mdtool/Makefile
-@@ -21,10 +21,10 @@
+@@ -21,10 +21,16 @@
  # for Intel Linux and Intel Fortran Compiler 11.0
  # tsurugi, nehalem
  #
 -FC = ifort
 -FFLAGS = -O3 -msse3 -fno-inline-functions -traceback
 +FC = gfortran
-+FFLAGS = -O3 -msse3 -fno-inline-functions -ffree-line-length-none
  
 -CC = icc -O1 -fno-inline-functions
++DEB_RELEASE ?= $(shell lsb_release -c -s)
++ifneq ($(DEB_RELEASE), wheezy)
++  FFLAGS_EXTRA = -ffpe-summary=none
++endif
++
++FFLAGS = -O3 -msse3 -fno-inline-functions -ffree-line-length-none $(FFLAGS_EXTRA)
++
 +CC = gcc -O3 -fno-inline-functions
  #--------------------------------------------------------------------
  
  scanmdlog.o: inspectstr.o util.o
-@@ -35,9 +35,14 @@
+@@ -35,9 +41,14 @@
  tailmdlog: tailmdlog.o util.o
  	${FC} -o tailmdlog tailmdlog.o util.o
  
@@ -206,7 +223,7 @@ Makefile for building Debian package
  # End:***
 --- /dev/null
 +++ b/wfchg2pdos/Makefile
-@@ -0,0 +1,48 @@
+@@ -0,0 +1,54 @@
 +# Copyright (c) 2000-2013 Yoshihide Yoshimoto
 +######################################################################
 +# $Id: Makefile-dist,v 1.3 2013-01-24 07:11:51 yosimoto Exp $
@@ -233,7 +250,13 @@ Makefile for building Debian package
 +# tsurugi, nehalem
 +#
 +FC = gfortran
-+FFLAGS = -O3 -msse3 -fno-inline-functions
++
++DEB_RELEASE ?= $(shell lsb_release -c -s)
++ifneq ($(DEB_RELEASE), wheezy)
++  FFLAGS_EXTRA = -ffpe-summary=none
++endif
++
++FFLAGS = -O3 -msse3 -fno-inline-functions $(FFLAGS_EXTRA)
 +
 +CC = gcc -O3 -msse3 -fno-inline-functions
 +#--------------------------------------------------------------------

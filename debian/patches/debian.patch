@@ -1,6 +1,11 @@
 --- a/src/Makefile-dist
 +++ b/src/Makefile-dist
-@@ -52,35 +52,35 @@
+@@ -48,39 +48,39 @@
+ #
+ GDEFS = -DPWB_SORTED_BY_INDEX -DESM
+ #==========================================================
+-# Uncomment your machine's part and comment out all others. 
++# Uncomment your machine's part and comment out all others.
  #--------------------------------
  # for Intel Linux and Intel Fortran Compiler 11.0
  #
@@ -46,7 +51,16 @@
  #
  # for single-thread
  ##LIBLAPACK = -lmkl_lapack95_lp64 # for composerxe-2011
-@@ -127,43 +127,41 @@
+@@ -104,7 +104,7 @@
+ #ARCH_OBJ = arch_gdr.o
+ #ARCH_OBJ = arch_nehalem.o
+ arch_nehalem.o: arch_nehalem.f90 timeprof.o
+-	${FC} -O3 -openmp -msse3 -fno-inline-functions -unroll=0 -traceback ${DEFINES} -c $<
++	${FC} -O3 -openmp -fno-inline-functions -unroll=0 -traceback ${DEFINES} -c $<
+ 
+ XMPI_OBJ = xmpi_univ.o
+ 
+@@ -127,43 +127,48 @@
  	${FC} -c ${DEFINES} ${FOPTNON} mdlin.F
  
  # for AMD GPU
@@ -72,7 +86,14 @@
 -#F77FLAGS =
 -#F90FLAGS = -ffree-line-length-none
 -#FOPTNON = -O0
-+FFLAGS = -O3 -fopenmp -fno-inline-functions ${DEFINES} -I/usr/include
++DEB_RELEASE ?= $(shell lsb_release -c -s)
++FFLAGS = -ffpe-summary=none -O3 -fopenmp -fno-inline-functions ${DEFINES} -I/usr/include
++ifeq ($(DEB_RELEASE), bullseye)
++  FFLAGS = -ffpe-summary=none -O3 -fopenmp -fno-inline-functions ${DEFINES} -I/usr/include -fallow-argument-mismatch
++endif
++ifeq ($(DEB_RELEASE), jammy)
++  FFLAGS = -ffpe-summary=none -O3 -fopenmp -fno-inline-functions ${DEFINES} -I/usr/include -fallow-argument-mismatch
++endif
 +F77FLAGS =
 +F90FLAGS = -ffree-line-length-none
 +FOPTNON = -O0
@@ -114,7 +135,26 @@
  #--------------------------------
  # for K computer
  #
-@@ -232,11 +230,11 @@
+@@ -177,7 +182,7 @@
+ #FFLAGS = -Kfast,parallel,openmp,ocl ${DEFINES}
+ #F77FLAGS =
+ #F90FLAGS = -I/home/apps/fftw/3.3/include
+-#FOPTNON = 
++#FOPTNON =
+ #LDFLAGS = -Kfast,parallel,openmp -Qt
+ #CFLAGS =
+ #
+@@ -224,19 +229,19 @@
+ #	${FC} -c ${DEFINES} -O1 doss.f90
+ 
+ #CC = fccpx -Kfast -Koptmsg=2
+-#FC_CIF = 
+-#FFLAG_CIF = 
++#FC_CIF =
++#FFLAG_CIF =
+ #==========================================================
+ # uncomment one and commet out others.
+ # for NVIDIA CUDA
  #SCGDGOBJ = dvdsnmp.o hploc.o nlprj.o rotwfn.o sorthcl.o \
  #	exchange.o exchange_kern_cuda.o ${EIGSYSTM_OBJ}
  # for AMD GPU
@@ -130,7 +170,16 @@
  #==========================================================
  ################## FOR ESM METHOD by M.Otani 2006/02/06####################
  ################## Modified by Y.Ando 2011/01/21 ##########################
-@@ -505,7 +503,7 @@
+@@ -452,7 +457,7 @@
+ 	rotwfn.o sorthcl.o bsplpot.o exchange.o types.o xcf_types.o meshgen.o
+ exchange.o: exchange.F90 types.o symwfn.o timeprof.o meshgen.o potihxc.o \
+ 	xcf_types.o fftgrid-vx.h
+-exchange_kern_opencl.o: exchange_kern_opencl.c exchange_kern_opencl.h 
++exchange_kern_opencl.o: exchange_kern_opencl.c exchange_kern_opencl.h
+ exchange_kern.o: exchange_kern.F90 util.o fftgrid.h $(FFT3D_OBJ)
+ fftgrid-vx.h: fftgrid-scl.h
+ 	ln -s fftgrid-scl.h fftgrid-vx.h
+@@ -505,14 +510,15 @@
  tetrapdos: tetrapdos.F90 subr_tetra.o
  	${FC} -o tetrapdos tetrapdos.F90 subr_tetra.o ${LDLIBS}
  
@@ -139,9 +188,18 @@
  	/bin/rm -f core *.o *~ *.bak *.orig TAGS *.rej *.mod *.log \
  	vbpef vbstm cgmrpt mdrpt inipot wfn2chg pe2dos tetrapdos \
  	hmatr2bnd wannier pefcos atmcdist distpart \
+ 	a.out \
+ 	pfft3ds.f90 fft3dsp.f90 fft3dsp_subr.f90 fft3duz.f90 fft3duz_subr.f90 \
+ 	fftgrid.h mkl_dfti.f90 fftgrid-vx.h \
+-	xticonv strconv diffstr iplstr cmpstr
++	xticonv strconv diffstr iplstr cmpstr \
++	dftd3/*.o
+ 
+ ################## FOR ESM METHOD by M.Otani 2006/02/06####################
+ ################## Modified by Y.Ando 2011/01/21 ##########################
 --- /dev/null
 +++ b/src/Makefile
-@@ -0,0 +1,547 @@
+@@ -0,0 +1,549 @@
 +# Copyright (c) 1983-2000 TAPP Consortium
 +# Copyright (c) 2000-2017 Yoshihide Yoshimoto
 +######################################################################
@@ -285,10 +343,12 @@
 +#DEFINES = -O3 ${GDEFS} -DINCONSISTENT_THREAD_COMP
 +
 +DEB_RELEASE ?= $(shell lsb_release -c -s)
-+ifneq ($(DEB_RELEASE), wheezy)
-+  FFLAGS = -ffpe-summary=none -O3 -fopenmp -fno-inline-functions ${DEFINES} -I/usr/include
-+else
-+  FFLAGS = -O3 -fopenmp -fno-inline-functions ${DEFINES} -I/usr/include
++FFLAGS = -ffpe-summary=none -O3 -fopenmp -fno-inline-functions ${DEFINES} -I/usr/include
++ifeq ($(DEB_RELEASE), bullseye)
++  FFLAGS = -ffpe-summary=none -O3 -fopenmp -fno-inline-functions ${DEFINES} -I/usr/include -fallow-argument-mismatch
++endif
++ifeq ($(DEB_RELEASE), jammy)
++  FFLAGS = -ffpe-summary=none -O3 -fopenmp -fno-inline-functions ${DEFINES} -I/usr/include -fallow-argument-mismatch
 +endif
 +F77FLAGS =
 +F90FLAGS = -ffree-line-length-none
